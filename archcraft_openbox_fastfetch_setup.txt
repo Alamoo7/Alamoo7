@@ -1,0 +1,31 @@
+#!/bin/bash
+
+# Archcraft Openbox Dotfiles Auto Setup Script (Modified for Fastfetch)
+# For Minimal Arch Install - Safe for dry-run
+# -------------------------------------------------------------
+
+set -e
+
+echo ">>> Updating system..."
+sudo pacman -Syu --noconfirm
+
+echo ">>> Installing required packages..."
+sudo pacman -S --needed --noconfirm git openbox obconf tint2 picom rofi lxappearance nitrogen fastfetch
+
+echo ">>> Cloning Archcraft Openbox dotfiles..."
+git clone --depth 1 https://github.com/archcraft-os/openbox.git ~/archcraft-openbox
+
+echo ">>> Copying Openbox configuration..."
+mkdir -p ~/.config/openbox
+cp -r ~/archcraft-openbox/.config/openbox/* ~/.config/openbox/
+
+echo ">>> Replacing Neofetch with Fastfetch..."
+# Update autostart or shell configs to use fastfetch
+sed -i 's/neofetch/fastfetch/g' ~/.config/openbox/autostart 2>/dev/null || true
+sed -i 's/neofetch/fastfetch/g' ~/.bashrc 2>/dev/null || true
+sed -i 's/neofetch/fastfetch/g' ~/.zshrc 2>/dev/null || true
+
+echo ">>> Setting permissions..."
+chmod +x ~/.config/openbox/autostart
+
+echo ">>> Setup complete! You may need to restart Openbox session."
